@@ -22,6 +22,8 @@ const documentsPanel = document.getElementById("documents-panel");
 const documentsList = document.getElementById("documents-list");
 const loginError = document.getElementById("login-error");
 const logoutBtn = document.getElementById("logout-btn");
+const profilePanel = document.getElementById("profile-panel");
+const profileInfo = document.getElementById("profile-info");
 
 // Modal ve PDF frame elementlerini seç
 const pdfModal = document.getElementById("pdf-modal");
@@ -38,6 +40,7 @@ loginForm.addEventListener("submit", async function(e) {
 
     try {
         const userCredential = await auth.signInWithEmailAndPassword(email, password);
+        const user = userCredential.user;
         // Ortak belgeleri getir
         const docsSnap = await db.collection("documents").get();
         const documents = [];
@@ -51,8 +54,12 @@ loginForm.addEventListener("submit", async function(e) {
         });
         showDocuments(documents);
 
+        // Profil kutusunu doldur ve göster
+        showProfile(user, username);
+
         loginPanel.style.display = "none";
         documentsPanel.style.display = "block";
+        profilePanel.style.display = "block";
         loginError.textContent = "";
     } catch (err) {
         console.error(err);
@@ -75,7 +82,7 @@ function showDocuments(documents) {
     if (documents.length === 0) {
         const info = document.createElement("li");
         info.className = "info";
-        info.textContent = "Kayıtlı herhangi bir belge bulunmamaktadır.";
+        info.textContent = "Kayıtlı herhangi bir veri bulunmamaktadır.";
         documentsList.appendChild(info);
     } else {
         documents.forEach(doc => {
@@ -119,6 +126,23 @@ function showDocuments(documents) {
     }
 }
 
+function showProfile(user, username) {
+    profileInfo.innerHTML = "";
+    const items = [
+        { label: "Kullanıcı Adı", value: username },
+        { label: "UID", value: user.uid },
+        { label: "E-posta", value: user.email },
+        { label: "Doğrulama Durumu", value: user.emailVerified ? "Doğrulandı" : "Doğrulanmadı" },
+        { label: "Son Giriş", value: user.metadata.lastSignInTime },
+        { label: "Oluşturulma Tarihi", value: user.metadata.creationTime }
+    ];
+    items.forEach(item => {
+        const li = document.createElement("li");
+        li.textContent = `${item.label}: ${item.value}`;
+        profileInfo.appendChild(li);
+    });
+}
+
 // Modal kapatma
 closeModal.onclick = function() {
     pdfModal.style.display = "none";
@@ -136,6 +160,7 @@ window.onclick = function(event) {
 logoutBtn.addEventListener("click", async function() {
     await auth.signOut();
     documentsPanel.style.display = "none";
+    profilePanel.style.display = "none";
     loginPanel.style.display = "block";
     loginForm.reset();
 });
