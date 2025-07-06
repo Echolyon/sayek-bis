@@ -2,7 +2,7 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <title>SAYEK Belge İşlemleri Sistemi</title>
+    <title>Agalar Kurul Karar Veritabanı</title>
     <link rel="stylesheet" href="index.css">
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
@@ -11,18 +11,16 @@
 </head>
 <body>
     <header>
-        <h1>SAYEK Belge İşlemleri Sistemi</h1>
+        <h1>Agalar Kurul Karar Veritabanı</h1>
     </header>
     <main>
         <div class="panel" id="login-panel">
             <h2>Kullanıcı Girişi</h2>
             <form id="login-form">
-                <label for="email">E-posta:</label>
-                <input type="email" id="email" name="email" required>
+                <label for="email">Kullanıcı Adı:</label>
+                <input type="text" id="email" name="email" required>
                 <label for="password">Şifre:</label>
                 <input type="password" id="password" name="password" required>
-                <label for="code">Doğrulama Kodu:</label>
-                <input type="text" id="code" name="code" required>
                 <button type="submit">Giriş Yap</button>
             </form>
             <div id="login-error" class="error"></div>
@@ -40,7 +38,7 @@
         </div>
     </main>
     <footer>
-        <p>Eğelence amaçlı oluşturulmuştur. Resmi bir kurum değildir.</p>
+        <p>&copy; 2025 Agalar Kurulu</p>
     </footer>
     <script src="index.js"></script>
 </body>
