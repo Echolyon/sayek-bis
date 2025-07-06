@@ -1,18 +1,16 @@
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+// Firebase config ve başlatma
 const firebaseConfig = {
-  apiKey: "AIzaSyBxpPjg8XuHCYmGyUbvtbi7TGox-zS0-Dc",
-  authDomain: "sayek-bis.firebaseapp.com",
-  projectId: "sayek-bis",
-  storageBucket: "sayek-bis.firebasestorage.app",
-  messagingSenderId: "925597557145",
-  appId: "1:925597557145:web:49ee5aeb20e42ce1f4f308",
-  measurementId: "G-R9KXLMZPJY"
+  apiKey: "AIzaSyARQxDmh8UB3GuLBW-8ry2uxx2fe_GZcG8",
+  authDomain: "akkv-agalar.firebaseapp.com",
+  projectId: "akkv-agalar",
+  storageBucket: "akkv-agalar.firebasestorage.app",
+  messagingSenderId: "770615946763",
+  appId: "1:770615946763:web:39d000efa05aa97173610e",
+  measurementId: "G-H9K9RJ6X7N"
 };
 
-// Initialize Firebase
 firebase.initializeApp(firebaseConfig);
-// analytics opsiyonel, gerekirse ekleyebilirsin
+// analytics opsiyonel
 // const analytics = firebase.analytics();
 
 const auth = firebase.auth();
@@ -32,36 +30,19 @@ const closeModal = document.getElementById("close-modal");
 
 loginForm.addEventListener("submit", async function(e) {
     e.preventDefault();
-    const email = document.getElementById("email").value.trim().toLowerCase();
+    // Kullanıcı adı ve şifreyi al
+    const username = document.getElementById("email").value.trim().toLowerCase();
     const password = document.getElementById("password").value;
-    const code = document.getElementById("code").value.trim();
+    // Firebase için e-posta formatına çevir
+    const email = username + "@akkv.abdul";
 
     try {
         const userCredential = await auth.signInWithEmailAndPassword(email, password);
-        const userId = userCredential.user.uid;
-
-        // Hata ayıklama için UID ve e-posta konsola yazılsın
-        console.log("Giriş yapan UID:", userId, "E-posta:", email);
-
-        // Kullanıcıya ait doğrulama kodunu Firestore'dan kontrol et
-        const userDoc = await db.collection("users").doc(userId).get();
-        if (!userDoc.exists) {
-            loginError.textContent = "Firestore'da kullanıcı belgesi bulunamadı. UID: " + userId;
-            await auth.signOut();
-            return;
-        }
-        if (userDoc.data().verificationCode !== code) {
-            loginError.textContent = "Doğrulama kodu hatalı!";
-            await auth.signOut();
-            return;
-        }
-
-        // Belgeleri getir
-        const docsSnap = await db.collection("users").doc(userId).collection("documents").get();
+        // Ortak belgeleri getir
+        const docsSnap = await db.collection("documents").get();
         const documents = [];
-        docsSnap.forEach(doc => {
-            const data = doc.data();
-            // name ve url varsa obje olarak ekle, yoksa sadece name
+        docsSnap.forEach(docSnap => {
+            const data = docSnap.data();
             if (data.name && data.url) {
                 documents.push({ name: data.name, url: data.url });
             } else if (data.name) {
@@ -76,13 +57,13 @@ loginForm.addEventListener("submit", async function(e) {
     } catch (err) {
         console.error(err);
         if (err.code === "auth/user-not-found") {
-            loginError.textContent = "Kullanıcı bulunamadı. Lütfen e-posta adresinizi doğru girdiğinizden emin olun.";
+            loginError.textContent = "Kullanıcı bulunamadı. Lütfen kullanıcı adınızı doğru girdiğinizden emin olun.";
         } else if (err.code === "auth/wrong-password") {
             loginError.textContent = "Şifre hatalı!";
         } else if (err.code === "auth/too-many-requests") {
             loginError.textContent = "Çok fazla deneme yapıldı. Lütfen daha sonra tekrar deneyin.";
         } else if (err.code === "auth/invalid-email") {
-            loginError.textContent = "Geçersiz e-posta adresi.";
+            loginError.textContent = "Geçersiz kullanıcı adı.";
         } else {
             loginError.textContent = "Giriş yapılamadı: " + err.message;
         }
